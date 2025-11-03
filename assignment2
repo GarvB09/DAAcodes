@@ -1,0 +1,141 @@
+import time
+import copy
+
+# ===========================
+# Transaction structure
+# ===========================
+class Transaction:
+    def __init__(self, tid, customer, amount, timestamp, index):
+        self.id = tid
+        self.customer = customer
+        self.amount = float(amount)
+        self.timestamp = timestamp
+        self.originalIndex = index
+
+    def __repr__(self):
+        return f"{self.id} | {self.customer} | ₹{self.amount:.2f} | {self.timestamp}"
+
+
+# ===========================
+# Dynamic input from user
+# ===========================
+transactions = []
+
+n = int(input("Enter number of transactions: "))
+
+for i in range(n):
+    print(f"\nEnter details for Transaction {i+1}:")
+    tid = input("  Transaction ID: ")
+    cust = input("  Customer Name: ")
+    amount = float(input("  Amount (₹): "))
+    timestamp = input("  Timestamp (e.g., 2025-10-29 10:30): ")
+    transactions.append(Transaction(tid, cust, amount, timestamp, i))
+
+
+# ===========================
+# Merge Sort (Stable)
+# ===========================
+merge_comparisons = 0
+
+def merge(arr, left, mid, right):
+    global merge_comparisons
+    L = arr[left:mid+1]
+    R = arr[mid+1:right+1]
+    i = j = 0
+    k = left
+
+    while i < len(L) and j < len(R):
+        merge_comparisons += 1
+        if L[i].amount < R[j].amount:
+            arr[k] = L[i]
+            i += 1
+        elif L[i].amount == R[j].amount:
+            if L[i].originalIndex < R[j].originalIndex:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+        else:
+            arr[k] = R[j]
+            j += 1
+        k += 1
+
+    while i < len(L):
+        arr[k] = L[i]
+        i += 1
+        k += 1
+
+    while j < len(R):
+        arr[k] = R[j]
+        j += 1
+        k += 1
+
+
+def merge_sort(arr, left, right):
+    if left < right:
+        mid = (left + right) // 2
+        merge_sort(arr, left, mid)
+        merge_sort(arr, mid + 1, right)
+        merge(arr, left, mid, right)
+
+
+# ===========================
+# Quick Sort
+# ===========================
+quick_comparisons = 0
+
+def partition(arr, low, high):
+    global quick_comparisons
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        quick_comparisons += 1
+        if arr[j].amount <= pivot.amount:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    return i + 1
+
+
+def quick_sort(arr, low, high):
+    if low < high:
+        pi = partition(arr, low, high)
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)
+
+
+# ===========================
+# Print transactions
+# ===========================
+def print_transactions(arr):
+    for t in arr:
+        print(t)
+
+
+# ===========================
+# Main Program Execution
+# ===========================
+quick_data = copy.deepcopy(transactions)
+merge_data = copy.deepcopy(transactions)
+
+# Quick Sort
+start = time.time()
+quick_sort(quick_data, 0, len(quick_data) - 1)
+quick_time = (time.time() - start) * 1_000_000  # microseconds
+
+# Merge Sort
+start = time.time()
+merge_sort(merge_data, 0, len(merge_data) - 1)
+merge_time = (time.time() - start) * 1_000_000
+
+# ===========================
+# Output
+# ===========================
+print("\nQuick Sort (By Amount):")
+print_transactions(quick_data)
+print(f"Comparisons: {quick_comparisons}, Time: {quick_time:.2f} μs")
+
+print("\nMerge Sort (Stable by Amount):")
+print_transactions(merge_data)
+print(f"Comparisons: {merge_comparisons}, Time: {merge_time:.2f} μs")
