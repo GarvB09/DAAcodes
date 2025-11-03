@@ -1,0 +1,47 @@
+def knapsack(items, max_weight):
+    n = len(items)
+    dp = [[0] * (max_weight + 1) for _ in range(n + 1)]
+
+    # Build DP table
+    for i in range(1, n + 1):
+        name, wt, val = items[i - 1]
+        for w in range(max_weight + 1):
+            if wt <= w:
+                dp[i][w] = max(val + dp[i - 1][w - wt], dp[i - 1][w])
+            else:
+                dp[i][w] = dp[i - 1][w]
+
+    # Get maximum value
+    res_value = dp[n][max_weight]
+    w = max_weight
+    chosen = []
+
+    # Backtrack to find chosen items
+    for i in range(n, 0, -1):
+        if dp[i][w] != dp[i - 1][w]:
+            name, wt, val = items[i - 1]
+            chosen.append(name)
+            w -= wt
+
+    chosen.reverse()
+    return res_value, chosen
+
+
+# =============================
+# Main program
+# =============================
+n = int(input("Enter number of items: "))
+items = []
+
+for i in range(n):
+    entry = input("Enter item name, weight, and value (space-separated): ").split()
+    name, weight, value = entry[0], int(entry[1]), int(entry[2])
+    items.append((name, weight, value))
+
+max_weight = int(input("Enter maximum weight capacity: "))
+
+res_value, chosen = knapsack(items, max_weight)
+
+print("\n===== Knapsack Result =====")
+print("Maximum Value:", res_value)
+print("Items Chosen:", " ".join(chosen))
