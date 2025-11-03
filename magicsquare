@@ -31,8 +31,7 @@ def generate_magic_square(n):
     print(f"Magic Constant = {magic_constant}\n")
 
     for row in square:
-        print("  ".join(f"{x:2d}" for x in row))
-
+        print(*row)   # 👈 simplified printing
 
 # -------------------------------
 # MAIN PROGRAM
