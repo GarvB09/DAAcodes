@@ -15,6 +15,7 @@ def floyd_warshall(dist, nxt):
                     dist[i][j] = dist[i][k] + dist[k][j]
                     nxt[i][j] = nxt[i][k]
 
+
 def get_path(u, v, nxt):
     """Reconstruct the shortest path from u → v."""
     if nxt[u][v] == -1:
@@ -44,7 +45,7 @@ if __name__ == "__main__":
     city_names = ["CityA", "CityB", "CityC", "CityD"]
 
     # Initialize next matrix for path reconstruction
-    nxt = [[-1]*V for _ in range(V)]
+    nxt = [[-1] * V for _ in range(V)]
     for i in range(V):
         for j in range(V):
             if dist[i][j] != INF and i != j:
@@ -55,8 +56,13 @@ if __name__ == "__main__":
 
     # Display shortest distance matrix
     print("\nShortest Distance Matrix:")
-    for row in dist:
-        print("\t".join("INF" if x == INF else str(x) for x in row))
+    for i in range(V):
+        for j in range(V):
+            if dist[i][j] == INF:
+                print("INF", end="\t")
+            else:
+                print(dist[i][j], end="\t")
+        print()
 
     # Example: Find shortest path from CityA → CityD
     src, dest = 0, 3
