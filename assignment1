@@ -1,0 +1,115 @@
+# ============================
+# Student Record Search System
+# ============================
+
+students = []  # Empty list — will be filled dynamically
+
+# ----------------------------
+# Input Student Data
+# ----------------------------
+n = int(input("Enter number of student records: "))
+
+for i in range(n):
+    print(f"\nEnter details for student {i+1}:")
+    prn = int(input("  PRN: "))
+    name = input("  Name: ")
+    cls = input("  Class (FY/SY/TY): ")
+    mobile = input("  Mobile: ")
+    marks = int(input("  Marks: "))
+
+    students.append({
+        "prn": prn,
+        "name": name,
+        "class": cls,
+        "mobile": mobile,
+        "marks": marks
+    })
+
+# Sort by PRN (for binary search)
+students.sort(key=lambda s: s["prn"])
+
+
+# ----------------------------
+# Display a single record
+# ----------------------------
+def display(student):
+    print(f"\nPRN: {student['prn']}")
+    print(f"Name: {student['name']}")
+    print(f"Class: {student['class']}")
+    print(f"Mobile: {student['mobile']}")
+    print(f"Marks: {student['marks']}")
+
+
+# ----------------------------
+# Binary Search by PRN
+# ----------------------------
+def binary_search(prn):
+    low, high = 0, len(students) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if students[mid]["prn"] == prn:
+            return students[mid]
+        elif students[mid]["prn"] < prn:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return None
+
+
+# ----------------------------
+# Linear Search by any field
+# ----------------------------
+def linear_search(field, value):
+    found = False
+    for s in students:
+        if str(s[field]).lower() == str(value).lower():
+            display(s)
+            found = True
+    if not found:
+        print(f"No record found for {field} = {value}")
+
+
+# ----------------------------
+# Main Menu
+# ----------------------------
+while True:
+    print("\n=== Student Search Menu ===")
+    print("1. Search by PRN (Binary Search)")
+    print("2. Search by Name")
+    print("3. Search by Class")
+    print("4. Search by Mobile")
+    print("5. Search by Marks")
+    print("6. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        prn = int(input("Enter PRN: "))
+        s = binary_search(prn)
+        if s:
+            display(s)
+        else:
+            print("PRN not found.")
+
+    elif choice == "2":
+        name = input("Enter Name: ")
+        linear_search("name", name)
+
+    elif choice == "3":
+        cls = input("Enter Class: ")
+        linear_search("class", cls)
+
+    elif choice == "4":
+        mob = input("Enter Mobile: ")
+        linear_search("mobile", mob)
+
+    elif choice == "5":
+        marks = int(input("Enter Marks: "))
+        linear_search("marks", marks)
+
+    elif choice == "6":
+        print("Exiting...")
+        break
+
+    else:
+        print("Invalid choice. Try again.")
