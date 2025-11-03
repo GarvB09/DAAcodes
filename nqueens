@@ -1,0 +1,59 @@
+# ===============================
+# 🔹 Generalized Backtracking Template (Python)
+# ===============================
+
+def is_safe(grid, row, col, n):
+    # Check vertically up
+    for i in range(row):
+        if grid[i][col] == 'X':
+            return False
+
+    # Check upper-left diagonal
+    i, j = row - 1, col - 1
+    while i >= 0 and j >= 0:
+        if grid[i][j] == 'X':
+            return False
+        i -= 1
+        j -= 1
+
+    # Check upper-right diagonal
+    i, j = row - 1, col + 1
+    while i >= 0 and j < n:
+        if grid[i][j] == 'X':
+            return False
+        i -= 1
+        j += 1
+
+    return True
+
+
+def solve(grid, row, n, all_solutions):
+    # Base case
+    if row == n:
+        all_solutions.append(["".join(r) for r in grid])
+        return
+
+    for col in range(n):
+        if is_safe(grid, row, col, n):
+            grid[row][col] = 'X'
+            solve(grid, row + 1, n, all_solutions)
+            grid[row][col] = '.'  # backtrack
+
+
+# ===============================
+# Main Program
+# ===============================
+if __name__ == "__main__":
+    n = int(input("Enter grid size (n): "))
+    grid = [['.' for _ in range(n)] for _ in range(n)]
+    all_solutions = []
+
+    solve(grid, 0, n, all_solutions)
+
+    print("\nAll valid configurations:")
+    for idx, layout in enumerate(all_solutions, 1):
+        print(f"\nConfiguration {idx}:")
+        for row in layout:
+            print(row)
+
+    print(f"\nTotal configurations found: {len(all_solutions)}")
