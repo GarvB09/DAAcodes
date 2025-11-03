@@ -1,9 +1,8 @@
-# ================================
-# Floyd–Warshall Algorithm (Python)
-# with Path Reconstruction
-# ================================
-
 import math
+
+# =====================================
+# Floyd–Warshall Algorithm with Path
+# =====================================
 
 def floyd_warshall(dist, nxt):
     n = len(dist)
@@ -16,8 +15,8 @@ def floyd_warshall(dist, nxt):
                     dist[i][j] = dist[i][k] + dist[k][j]
                     nxt[i][j] = nxt[i][k]
 
-
 def get_path(u, v, nxt):
+    """Reconstruct the shortest path from u → v."""
     if nxt[u][v] == -1:
         return []
     path = [u]
@@ -27,9 +26,9 @@ def get_path(u, v, nxt):
     return path
 
 
-# ================================
+# =====================================
 # Main Program
-# ================================
+# =====================================
 if __name__ == "__main__":
     INF = math.inf
     V = 4
@@ -42,10 +41,9 @@ if __name__ == "__main__":
         [2, INF, INF, 0]
     ]
 
-    # City names
     city_names = ["CityA", "CityB", "CityC", "CityD"]
 
-    # Initialize next matrix
+    # Initialize next matrix for path reconstruction
     nxt = [[-1]*V for _ in range(V)]
     for i in range(V):
         for j in range(V):
@@ -55,21 +53,18 @@ if __name__ == "__main__":
     # Run algorithm
     floyd_warshall(dist, nxt)
 
-    # Print shortest distance matrix
+    # Display shortest distance matrix
     print("\nShortest Distance Matrix:")
-    for i in range(V):
-        for j in range(V):
-            print("INF" if dist[i][j] == INF else dist[i][j], end="\t")
-        print()
+    for row in dist:
+        print("\t".join("INF" if x == INF else str(x) for x in row))
 
-    # Example: Find shortest path
+    # Example: Find shortest path from CityA → CityD
     src, dest = 0, 3
     print(f"\nShortest path from {city_names[src]} to {city_names[dest]}:")
 
     path = get_path(src, dest, nxt)
-    if not path:
-        print("No path exists.")
-    else:
+    if path:
         print(" -> ".join(city_names[i] for i in path))
         print(f"Total Distance: {dist[src][dest]}")
-
+    else:
+        print("No path exists.")
