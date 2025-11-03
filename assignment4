@@ -1,0 +1,43 @@
+import heapq
+
+def find_shortest_route(hubs, roads, start, end):
+    # Build graph
+    graph = {hub: [] for hub in hubs}
+    for u, v, time in roads:
+        graph[u].append((v, time))
+        graph[v].append((u, time))  # assuming roads are two-way
+
+    # Dijkstra's algorithm
+    pq = [(0, start, [start])]  # (total_time, current_hub, path)
+    visited = set()
+
+    while pq:
+        time, hub, path = heapq.heappop(pq)
+        if hub in visited:
+            continue
+        visited.add(hub)
+
+        if hub == end:
+            print(f"Shortest travel time: {time} minutes")
+            print("Path:", " → ".join(path))
+            return
+
+        for neighbor, t in graph[hub]:
+            if neighbor not in visited:
+                heapq.heappush(pq, (time + t, neighbor, path + [neighbor]))
+
+    print("No route found between the hubs.")
+
+# Example input
+hubs = ['Shivaji Nagar', 'FC Road', 'Kothrud', 'Viman Nagar', 'Hadapsar']
+roads = [
+    ('Shivaji Nagar', 'FC Road', 10),
+    ('Shivaji Nagar', 'Kothrud', 15),
+    ('FC Road', 'Kothrud', 5),
+    ('FC Road', 'Viman Nagar', 20),
+    ('Kothrud', 'Hadapsar', 30),
+    ('Viman Nagar', 'Hadapsar', 10)
+]
+
+# Run example
+find_shortest_route(hubs, roads, 'Shivaji Nagar', 'Hadapsar')
