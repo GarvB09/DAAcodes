@@ -1,0 +1,83 @@
+# ===================== Disjoint Set Union (for Kruskal) =====================
+class DSU:
+    def __init__(self, n):
+        self.parent = list(range(n))
+
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px != py:
+            self.parent[py] = px
+
+
+# ===================== Kruskal's Algorithm =====================
+def kruskal(n, edges):
+    edges.sort(key=lambda x: x[2])  # sort by weight
+    dsu = DSU(n)
+    mst = []
+    total_cost = 0
+
+    print("\n--- Kruskal's Algorithm Steps ---")
+    for u, v, w in edges:
+        if dsu.find(u) != dsu.find(v):
+            dsu.union(u, v)
+            mst.append((u, v, w))
+            total_cost += w
+            print(f"Include edge ({u}, {v}) with weight {w} | Total cost = {total_cost}")
+
+    return mst, total_cost
+
+
+# ===================== Prim's Algorithm =====================
+def prim(graph):
+    n = len(graph)
+    selected = [False] * n
+    edge_count = 0
+    total_cost = 0
+
+    selected[0] = True
+    print("\n--- Prim's Algorithm Steps ---")
+
+    while edge_count < n - 1:
+        minimum = float('inf')
+        a = b = -1
+        for i in range(n):
+            if selected[i]:
+                for j in range(n):
+                    if not selected[j] and graph[i][j]:
+                        if minimum > graph[i][j]:
+                            minimum = graph[i][j]
+                            a, b = i, j
+        if a != -1 and b != -1:
+            print(f"Include edge ({a}, {b}) with weight {graph[a][b]}")
+            total_cost += graph[a][b]
+            selected[b] = True
+            edge_count += 1
+
+    return total_cost
+
+
+# ===================== MAIN =====================
+if __name__ == "__main__":
+    # ----- Input for Kruskal -----
+    with open("graph_input.txt", "r") as f:
+        n, e = map(int, f.readline().split())
+        edges = [tuple(map(int, f.readline().split())) for _ in range(e)]
+
+    # ----- Input for Prim -----
+    with open("graph_input_prim.txt", "r") as f:
+        V = int(f.readline())
+        graph = [list(map(int, f.readline().split())) for _ in range(V)]
+
+    # Run Kruskal
+    mst_k, cost_k = kruskal(n, edges)
+    print("\nKruskal’s MST:", mst_k)
+    print("Total Cost (Kruskal):", cost_k)
+
+    # Run Prim
+    cost_p = prim(graph)
+    print("\nTotal Cost (Prim):", cost_p)
